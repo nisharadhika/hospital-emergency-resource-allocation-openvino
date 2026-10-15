@@ -3,7 +3,4 @@ __pycache__/
 *.py[cod]
 .env
 .streamlit/secrets.toml
-data/
-processed/
-models/
 .ipynb_checkpoints/

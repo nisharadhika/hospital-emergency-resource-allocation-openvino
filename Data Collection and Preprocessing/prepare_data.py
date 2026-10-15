@@ -1,6 +1,8 @@
-
+#edstays.csv+triage.csv merge using subj_id & stay_id
+#combined dataset saved to processed/visits_with_triage.csv
 from pathlib import Path
 import pandas as pd
+
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 OUTPUT_DIR = Path(__file__).resolve().parent / "processed"

@@ -1,13 +1,20 @@
-
-# app.py
-# Hospital Emergency Resource Allocation Dashboard
-# Academic prototype using OpenVINO and simulated hospital inventory.
+import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import streamlit as st
 import joblib
 import openvino as ov
+
+# app.py is in dashboard_user_inference; the project root is its parent.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RESOURCE_MODULE_DIR = PROJECT_ROOT / "emergency_resource_allocation"
+
+for folder in (PROJECT_ROOT, RESOURCE_MODULE_DIR):
+    folder_string = str(folder)
+    if folder_string not in sys.path:
+        sys.path.insert(0, folder_string)
 
 from resource_inventory import resource_inventory
 from allocation_algorithm import allocate_resources
@@ -36,10 +43,10 @@ FEATURE_COLUMNS = [
 @st.cache_resource
 def load_models():
     """Load the trained pipeline and compile the ONNX model once."""
-    pipeline = joblib.load("models/logistic_model.joblib")
+    pipeline = joblib.load(str(PROJECT_ROOT / "models" / "logistic_model.joblib"))
 
     core = ov.Core()
-    model = core.read_model("models/openvino/logistic_model.onnx")
+    model = core.read_model(str(PROJECT_ROOT / "models" / "openvino" / "logistic_model.xml"))
     compiled_model = core.compile_model(model, "CPU")
 
     return pipeline, compiled_model

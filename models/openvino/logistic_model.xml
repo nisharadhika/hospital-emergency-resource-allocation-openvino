@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<net name="onnx_Frontend_IR" version="11">
+	<layers>
+		<layer id="0" name="features" type="Parameter" version="opset1">
+			<data shape="?,168" element_type="f32" />
+			<output>
+				<port id="0" precision="FP32" names="features">
+					<dim>-1</dim>
+					<dim>168</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="1" name="Transpose_1950_compressed" type="Const" version="opset1">
+			<data element_type="f16" shape="4, 168" offset="0" size="1344" />
+			<output>
+				<port id="0" precision="FP16">
+					<dim>4</dim>
+					<dim>168</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="2" name="Transpose_1950" type="Convert" version="opset1">
+			<data destination_type="f32" />
+			<rt_info>
+				<attribute name="decompression" version="0" />
+			</rt_info>
+			<input>
+				<port id="0" precision="FP16">
+					<dim>4</dim>
+					<dim>168</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP32">
+					<dim>4</dim>
+					<dim>168</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="3" name="scores" type="MatMul" version="opset1">
+			<data transpose_a="false" transpose_b="true" />
+			<input>
+				<port id="0" precision="FP32">
+					<dim>-1</dim>
+					<dim>168</dim>
+				</port>
+				<port id="1" precision="FP32">
+					<dim>4</dim>
+					<dim>168</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP32" names="scores">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="4" name="Constant_2300_compressed" type="Const" version="opset1">
+			<data element_type="f16" shape="1, 4" offset="1344" size="8" />
+			<output>
+				<port id="0" precision="FP16">
+					<dim>1</dim>
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="5" name="Constant_2300" type="Convert" version="opset1">
+			<data destination_type="f32" />
+			<rt_info>
+				<attribute name="decompression" version="0" />
+			</rt_info>
+			<input>
+				<port id="0" precision="FP16">
+					<dim>1</dim>
+					<dim>4</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP32">
+					<dim>1</dim>
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="6" name="logits" type="Add" version="opset1">
+			<data auto_broadcast="numpy" />
+			<input>
+				<port id="0" precision="FP32">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+				<port id="1" precision="FP32">
+					<dim>1</dim>
+					<dim>4</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP32" names="logits">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="7" name="probabilities" type="SoftMax" version="opset8">
+			<data axis="1" />
+			<input>
+				<port id="0" precision="FP32">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP32" names="probabilities">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="8" name="classes" type="Const" version="opset1">
+			<data element_type="i64" shape="4" offset="1352" size="32" />
+			<output>
+				<port id="0" precision="I64" names="classes">
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="9" name="Constant_7" type="Const" version="opset1">
+			<data element_type="i64" shape="" offset="1384" size="8" />
+			<rt_info>
+				<attribute name="DisablePrecisionConversion" version="0" value="dynamic:f16" />
+			</rt_info>
+			<output>
+				<port id="0" precision="I64" />
+			</output>
+		</layer>
+		<layer id="10" name="TopK_8" type="TopK" version="opset11">
+			<data axis="1" mode="max" sort="value" index_element_type="i64" stable="true" />
+			<input>
+				<port id="0" precision="FP32">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+				<port id="1" precision="I64" />
+			</input>
+			<output>
+				<port id="2" precision="FP32">
+					<dim>-1</dim>
+					<dim>1</dim>
+				</port>
+				<port id="3" precision="I64">
+					<dim>-1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="11" name="Constant_9" type="Const" version="opset1">
+			<data element_type="u64" shape="" offset="1384" size="8" />
+			<output>
+				<port id="0" precision="U64" />
+			</output>
+		</layer>
+		<layer id="12" name="class_index" type="Squeeze" version="opset1">
+			<input>
+				<port id="0" precision="I64">
+					<dim>-1</dim>
+					<dim>1</dim>
+				</port>
+				<port id="1" precision="U64" />
+			</input>
+			<output>
+				<port id="2" precision="I64" names="class_index">
+					<dim>-1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="13" name="Constant_12" type="Const" version="opset1">
+			<data element_type="i64" shape="" offset="1392" size="8" />
+			<output>
+				<port id="0" precision="I64" />
+			</output>
+		</layer>
+		<layer id="14" name="label" type="Gather" version="opset8">
+			<data batch_dims="0" />
+			<input>
+				<port id="0" precision="I64">
+					<dim>4</dim>
+				</port>
+				<port id="1" precision="I64">
+					<dim>-1</dim>
+				</port>
+				<port id="2" precision="I64" />
+			</input>
+			<output>
+				<port id="3" precision="I64" names="label">
+					<dim>-1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="15" name="label/sink_port_0" type="Result" version="opset1" output_names="label">
+			<input>
+				<port id="0" precision="I64">
+					<dim>-1</dim>
+				</port>
+			</input>
+		</layer>
+		<layer id="16" name="probabilities/sink_port_0" type="Result" version="opset1" output_names="probabilities">
+			<input>
+				<port id="0" precision="FP32">
+					<dim>-1</dim>
+					<dim>4</dim>
+				</port>
+			</input>
+		</layer>
+	</layers>
+	<edges>
+		<edge from-layer="0" from-port="0" to-layer="3" to-port="0" />
+		<edge from-layer="1" from-port="0" to-layer="2" to-port="0" />
+		<edge from-layer="2" from-port="1" to-layer="3" to-port="1" />
+		<edge from-layer="3" from-port="2" to-layer="6" to-port="0" />
+		<edge from-layer="4" from-port="0" to-layer="5" to-port="0" />
+		<edge from-layer="5" from-port="1" to-layer="6" to-port="1" />
+		<edge from-layer="6" from-port="2" to-layer="7" to-port="0" />
+		<edge from-layer="7" from-port="1" to-layer="10" to-port="0" />
+		<edge from-layer="7" from-port="1" to-layer="16" to-port="0" />
+		<edge from-layer="8" from-port="0" to-layer="14" to-port="0" />
+		<edge from-layer="9" from-port="0" to-layer="10" to-port="1" />
+		<edge from-layer="10" from-port="3" to-layer="12" to-port="0" />
+		<edge from-layer="11" from-port="0" to-layer="12" to-port="1" />
+		<edge from-layer="12" from-port="2" to-layer="14" to-port="1" />
+		<edge from-layer="13" from-port="0" to-layer="14" to-port="2" />
+		<edge from-layer="14" from-port="3" to-layer="15" to-port="0" />
+	</edges>
+	<rt_info>
+		<info name="OpenVINO Runtime" value="2026.4.1-22982-e213a147257-releases/2026/4" />
+		<Runtime_version value="2026.4.1-22982-e213a147257-releases/2026/4" />
+		<conversion_parameters>
+			<is_python_object value="False" />
+			<output_model value="models/openvino/logistic_model.xml" />
+		</conversion_parameters>
+	</rt_info>
+</net>
