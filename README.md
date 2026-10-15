@@ -53,7 +53,6 @@ CAO_proj/
 └── README.md
 ```
 
-*Note: The structure above highlights the main project components. Refer to the repository for the complete list of files.*
 
 ## Model and OpenVINO
 
